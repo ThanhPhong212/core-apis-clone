@@ -1,7 +1,7 @@
 NODE_ENV=development
-PORT=7878
+PORT=8080
 
-DB_NAME=hmb_db
-DB_USER=postgres
-DB_PASS=Admin@123
+DB_NAME=nl_db
+DB_USER=namlong_user
+DB_PASS=123456
 DB_HOST=localhost
