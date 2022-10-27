@@ -27,6 +27,7 @@ exports.checkPhone = async (req, res) => {
                 data: { type: "login", phone: phone }
             });
         }
+        await User.create({ phone: phone, role_id: 2 });
         const check = await sendOtp(phone);
         if (!check) return res.status(400).json({ status: false, message: "Please wait 90second to send again!!!" });
         return res.status(200).json({
@@ -90,39 +91,56 @@ exports.resendOtp = async (req, res) => {
 //Kiểm tra opt
 exports.checkOtp = async (req, res) => {
     const { phone, otp } = req.body;
-    const checkOtp = Otp.findOne({
+    const checkOtp = await Otp.findOne({
         where: {
             phone: phone,
             otp: otp,
-            expired: { [Op.gt]: Date.now() }
+            time_expired: { [Op.gt]: Date.now() }
         }
     });
     if (!checkOtp) return res.status(400).json({ status: false, message: "OTP is not valid" });
     const user = await User.findOne({
         where: { phone: phone }
     });
-    user.is_verified = true;
-    user.is_active = true;
-    await user.save();
+    try {
+        console.log(user);
+        user.isVerified = true;
+        user.isActive = true;
+        await user.save();
+    }
+    catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: error.message,
+            data: null
+        });
+    }
     res.status(200).send({
         status: true,
-        message: '',
+        message: 'verify success',
     })
 }
 
-// Create User
+// Create User (update password)
 exports.createUser = async (req, res) => {
     try {
-        const { password } = req.body;
+        const { phone, password } = req.body;
+        const user = await User.findOne({
+            where: { phone: phone }
+        });
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
         req.body.password = hashPassword;
-        req.body.role_id = req.body.roleId;
-        const user = await User.create(req.body);
+        user.password = hashPassword;
+        await user.save();
+        const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+            expiresIn: process.env.JWT_EXPIRE,
+        });
         res.status(200).send({
             status: true,
-            message: '',
-            data: await convertUnderscore(user)
+            message: 'success',
+            // data: await convertUnderscore(user),
+            token: token
         });
     } catch (err) {
         return res.status(400).send({
