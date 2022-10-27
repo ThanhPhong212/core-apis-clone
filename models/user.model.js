@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    userName: {
+    phone: {
       type: DataTypes.STRING,
       unique:{
         msg:""
@@ -61,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
     createdAt: false,
     indexes: [
-      { fields: ['user_name'], name: 'key_unique', unique: true }
+      { fields: ['phone'], name: 'key_unique', unique: true }
     ]
   });
   return User;

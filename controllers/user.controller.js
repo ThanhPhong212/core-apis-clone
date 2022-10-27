@@ -67,9 +67,9 @@ exports.getUsers = async (req, res) => {
 // login User
 exports.loginUser = async (req, res, next) => {
     try {
-        const { userName, password } = req.body;
+        const { phone, password } = req.body;
         const user = await User.findOne({
-            where: { userName: userName }
+            where: { phone: phone }
         })
         if (!user) return res.status(403).send({
             status: false,
