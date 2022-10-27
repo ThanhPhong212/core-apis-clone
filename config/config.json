@@ -1,0 +1,40 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "Admin@123",
+    "database": "hmb_db",
+    "host": "localhost",
+    "dialect": "postgres",
+    "logging": false
+  },
+  "test": {
+    "username": "postgres",
+    "password": "Admin@123",
+    "database": "hmb_db",
+    "host": "localhost",
+    "dialect": "postgres",
+    "logging": false
+
+  },
+  "production": {
+    "username": "",
+    "password": null,
+    "database": "",
+    "host": "",
+    "dialect": ""
+  },
+
+  "constant": {
+    "user": {
+      "ROLES": ["ADMIN", "INVESTMENT_DIRECTOR", "INVESTMENT_STAFF"],
+      "ADMIN": "administrator",
+      "INVESTMENT_DIRECTOR": "giám đốc đầu tư",
+      "INVESTMENT_STAFF": "nhân viên đầu tư"  
+    }
+  },
+
+  "ROLES": ["ADMIN", "INVESTMENT_DIRECTOR", "INVESTMENT_STAFF"],
+  "ADMIN": "administrator",
+  "INVESTMENT_DIRECTOR": "giám đốc đầu tư",
+  "INVESTMENT_STAFF": "nhân viên đầu tư"
+}
