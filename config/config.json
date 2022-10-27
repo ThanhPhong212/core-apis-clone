@@ -14,7 +14,6 @@
     "host": "localhost",
     "dialect": "postgres",
     "logging": false
-
   },
   "production": {
     "username": "",
@@ -23,16 +22,14 @@
     "host": "",
     "dialect": ""
   },
-
   "constant": {
     "user": {
-      "ROLES": ["ADMIN", "CUSTOMER"],
+      "ROLES": [
+        "ADMIN",
+        "CUSTOMER"
+      ],
       "ADMIN": "administrator",
       "CUSTOMER": "khách hàng"
     }
-  },
-
-  "ROLES": ["ADMIN", "CUSTOMER"],
-  "ADMIN": "administrator",
-  "CUSTOMER": "khách hàng"
+  }
 }

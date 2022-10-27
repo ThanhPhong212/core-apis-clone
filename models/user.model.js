@@ -48,6 +48,14 @@ module.exports = (sequelize, DataTypes) => {
         throw new Error('Do not try to set the `fullName` value!');
       }
     },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: new Date()
