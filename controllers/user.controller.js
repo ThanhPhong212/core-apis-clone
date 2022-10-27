@@ -2,6 +2,7 @@ const { User, Role, Otp } = require('../models/index');
 const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs');
 const { convertUnderscore } = require('../plugins/index');
+const jwt = require('jsonwebtoken');
 
 //Check SDT
 exports.checkPhone = async (req, res) => {
@@ -187,9 +188,13 @@ exports.loginUser = async (req, res, next) => {
             status: false,
             message: "password wrong!!!"
         });
+        const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+            expiresIn: process.env.JWT_EXPIRE,
+        });
         res.status(200).send({
             status: true,
             message: 'login success',
+            token: token
         });
     } catch (error) {
         return res.status(400).send({
