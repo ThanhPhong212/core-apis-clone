@@ -1,3 +1,4 @@
+const fs = require('fs');
 // upload file to server
 exports.uploadFile = async (req, res) => {
     const { type } = req.body
@@ -7,6 +8,8 @@ exports.uploadFile = async (req, res) => {
             message: 'No file type selected'
         });
     }
+    const dir= `./tmp/${type}`
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
     const file = req.files.file;
     const date = new Date();
     file.name = file.md5 + '-' + date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + '.' + file.name.split('.').pop();
@@ -24,5 +27,4 @@ exports.uploadFile = async (req, res) => {
             data: { file_name: file.name }
         });
     });
-
 }

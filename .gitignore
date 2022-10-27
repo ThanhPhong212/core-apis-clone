@@ -2,6 +2,4 @@
 .env
 .vscode
 /logs
-/tmp/image/**
-/tmp/csv/**
-/tmp/xlsx/**
+/tmp/**
