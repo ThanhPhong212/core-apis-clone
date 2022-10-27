@@ -11,6 +11,15 @@ exports.checkPhone = async (req, res) => {
             where: { phone: phone }
         });
         if (user) {
+            if (!user.is_verified) {
+                const check = await sendOtp(phone);
+                if (!check) return res.status(400).json({ status: false, message: "Please wait 90second to send again!!!" });
+                return res.status(200).json({
+                    status: true,
+                    message: "",
+                    data: { type: "register", phone: phone }
+                });
+            }
             return res.status(200).json({
                 status: true,
                 message: "user exsit",
@@ -35,6 +44,7 @@ exports.checkPhone = async (req, res) => {
 
 const sendOtp = async (phone) => {
     const otp = Math.floor(100000 + Math.random() * 999999);
+    //đợi nhà cung cấp sms
     try {
         const phoneOtp = await Otp.findOne({
             where: { phone: phone }
@@ -65,6 +75,7 @@ const sendOtp = async (phone) => {
     }
 }
 
+//gửi lại otp
 exports.resendOtp = async (req, res) => {
     const { phone } = req.body;
     const check = await sendOtp(phone);
@@ -75,8 +86,29 @@ exports.resendOtp = async (req, res) => {
     });
 }
 
-exports.checkOtp = () => {
+//Kiểm tra opt
+exports.checkOtp = async (req, res) => {
+    const { phone, otp } = req.body;
+    const checkOtp = Otp.findOne({
+        where: {
+            phone: phone,
+            otp: otp,
+            expired: { [Op.gt]: Date.now() }
+        }
+    });
+    if (!checkOtp) return res.status(400).json({ status: false, message: "OTP is not valid" });
+    const user = await User.findOne({
+        where: { phone: phone }
+    });
+    user.is_verified = true;
+    user.is_active = true;
+    await user.save();
+    res.status(200).send({
+        status: true,
+        message: '',
+    })
 }
+
 // Create User
 exports.createUser = async (req, res) => {
     try {

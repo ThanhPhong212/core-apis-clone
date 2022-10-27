@@ -26,8 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     phone: {
       type: DataTypes.STRING,
-      unique:{
-        msg:""
+      unique: {
+        msg: ""
       }
     },
     password: {
@@ -47,6 +47,14 @@ module.exports = (sequelize, DataTypes) => {
       set(value) {
         throw new Error('Do not try to set the `fullName` value!');
       }
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
     created_at: {
       type: DataTypes.DATE,
