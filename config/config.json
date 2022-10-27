@@ -1,8 +1,8 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "Admin@123",
-    "database": "hmb_db",
+    "username": "namlong_user",
+    "password": "123456",
+    "database": "nl_db",
     "host": "localhost",
     "dialect": "postgres",
     "logging": false
@@ -26,15 +26,13 @@
 
   "constant": {
     "user": {
-      "ROLES": ["ADMIN", "INVESTMENT_DIRECTOR", "INVESTMENT_STAFF"],
+      "ROLES": ["ADMIN", "CUSTOMER"],
       "ADMIN": "administrator",
-      "INVESTMENT_DIRECTOR": "giám đốc đầu tư",
-      "INVESTMENT_STAFF": "nhân viên đầu tư"  
+      "CUSTOMER": "khách hàng"
     }
   },
 
-  "ROLES": ["ADMIN", "INVESTMENT_DIRECTOR", "INVESTMENT_STAFF"],
+  "ROLES": ["ADMIN", "CUSTOMER"],
   "ADMIN": "administrator",
-  "INVESTMENT_DIRECTOR": "giám đốc đầu tư",
-  "INVESTMENT_STAFF": "nhân viên đầu tư"
+  "CUSTOMER": "khách hàng"
 }
