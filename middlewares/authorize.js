@@ -23,7 +23,7 @@ function authorize(roles = []) {
           if (!role) {
             return next('Role not found');
           }
-          if (roles.length && !roles.includes(role.dataValues.name)) {
+          if (roles.length && !roles.includes(role.dataValues.value)) {
             return next(`Unauthorized`);
           }
         });

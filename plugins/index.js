@@ -1,5 +1,4 @@
 exports.convertUnderscore = (data) => {
-    console.log(typeof data);
     if (data.length > 0) {
         data.map(item => {
             Object.keys(item.dataValues).forEach(key => {
@@ -9,9 +8,10 @@ exports.convertUnderscore = (data) => {
         });
     }
     if (typeof data === 'object') {
-        Object.keys(data).forEach(key => {
-            data[key.split(/(?=[A-Z])/).join('_').toLowerCase()] = data[key];
-            if (key !== key.split(/(?=[A-Z])/).join('_').toLowerCase()) delete data[key];
+        Object.keys(data.dataValues).forEach(key => {
+
+            data.dataValues[key.split(/(?=[A-Z])/).join('_').toLowerCase()] = data.dataValues[key];
+            if (key !== key.split(/(?=[A-Z])/).join('_').toLowerCase()) delete data.dataValues[key];
         });
     }
     return data;

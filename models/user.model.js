@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     phone: {
       type: DataTypes.STRING,
       unique:{
-        msg:""
+        msg:"Phone must be unique"
       }
     },
     password: {
