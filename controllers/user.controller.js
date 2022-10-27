@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs');
 const { convertUnderscore } = require('../plugins/index');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 //Check SDT
 exports.checkPhone = async (req, res) => {
@@ -149,6 +150,51 @@ exports.createUser = async (req, res) => {
         })
     }
 }
+
+exports.updateProfile = async (req, res) => {
+    try {
+        
+        const id= req.params.id;
+        const file = req.files.avatar;
+        const dir= `./tmp/avatarUser/${id}`;
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
+        const avt= await User.findOne({
+            where:{id:id}
+        })
+        fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
+            if (err) {
+                return res.status(400).send({
+                    status: false,
+                    message: err.message,
+                });
+            };
+        });
+        file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
+        const path = `${dir}/${file.name}`;
+        await file.mv(path, function (err) {
+            if (err){
+                return res.status(400).send({
+                    status: false,
+                    message: err.message,
+                });
+            }
+        });
+        req.body.avatar= file.name;
+        const user = await User.update(req.body, {
+            where: { id: id },
+          });
+        if (user == 1) {
+            return res.status(200).send("Update user success");
+        } else {
+            return res.status(400).send("Update user fail");
+        }
+    } catch (error) {
+      res.status(400).send({
+        status: false,
+        message: error.message,
+      });
+    }
+  };
 
 // Get all -> 
 exports.getUsers = async (req, res) => {

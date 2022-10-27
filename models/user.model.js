@@ -48,10 +48,27 @@ module.exports = (sequelize, DataTypes) => {
         throw new Error('Do not try to set the `fullName` value!');
       }
     },
+    birthDate:{
+      type: DataTypes.STRING
+    },
+
+    avatar: {
+      type: DataTypes.TEXT
+    },
+
+    nationality:{
+      type: DataTypes.STRING
+    },
+
+    gender:{
+      type: DataTypes.STRING
+    },
+
     isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false

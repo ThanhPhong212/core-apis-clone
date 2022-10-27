@@ -3,7 +3,7 @@ const router = Router();
 
 const validation = require('../middlewares/validationMiddleware')
 const userSchemaValidate = require('../validates/user.validate')
-const { getUsers, createUser, loginUser, checkPhone, resendOtp, checkOtp } = require('../controllers/user.controller');
+const { getUsers, createUser, loginUser, checkPhone, resendOtp, checkOtp, updateProfile } = require('../controllers/user.controller');
 
 const authorize = require('../middlewares/authorize')
 
@@ -13,5 +13,7 @@ router.post('/user/login', loginUser);
 router.post('/user/check-phone', checkPhone);
 router.post('/user/resend-otp', resendOtp);
 router.post('/user/check-otp', checkOtp);
+router.post('/user/update-profile/:id', updateProfile);
+
 // export router
 module.exports = router;
