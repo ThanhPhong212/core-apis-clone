@@ -1,7 +1,82 @@
-const { User, Role } = require('../models/index');
+const { User, Role, Otp } = require('../models/index');
 const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs');
 const { convertUnderscore } = require('../plugins/index');
+
+//Check SDT
+exports.checkPhone = async (req, res) => {
+    try {
+        const { phone } = req.body;
+        const user = await User.findOne({
+            where: { phone: phone }
+        });
+        if (user) {
+            return res.status(200).json({
+                status: true,
+                message: "user exsit",
+                data: { type: "login", phone: phone }
+            });
+        }
+        const check = await sendOtp(phone);
+        if (!check) return res.status(400).json({ status: false, message: "Please wait 90second to send again!!!" });
+        return res.status(200).json({
+            status: true,
+            message: "",
+            data: { type: "register", phone: phone }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: error.message,
+            data: null
+        });
+    }
+}
+
+const sendOtp = async (phone) => {
+    const otp = Math.floor(100000 + Math.random() * 999999);
+    try {
+        const phoneOtp = await Otp.findOne({
+            where: { phone: phone }
+        });
+        if (phoneOtp) {
+            if (phoneOtp.timeExpired <= Date.now()) {
+                await Otp.update({
+                    otp: otp,
+                    timeExpired: new Date(new Date().getTime() + 90 * 1000)
+                }, {
+                    where: { phone: phone }
+                });
+                return true;
+            }
+            return false;
+        } else {
+            const data = {
+                otp: otp,
+                phone: phone
+            }
+            await Otp.create(data);
+            return true;
+        }
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+exports.resendOtp = async (req, res) => {
+    const { phone } = req.body;
+    const check = await sendOtp(phone);
+    if (!check) return res.status(400).json({ status: false, message: "Please wait 90second to send again!!!" });
+    return res.status(200).json({
+        status: true,
+        message: ""
+    });
+}
+
+exports.checkOtp = () => {
+}
 // Create User
 exports.createUser = async (req, res) => {
     try {
