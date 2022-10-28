@@ -156,50 +156,26 @@ exports.updateProfile = async (req, res) => {
         const file = req.files.avatar;
         const dir= `./tmp/avatarUser/${id}`;
         if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
-        const avt= await User.findOne({
-            where:{id:id}
-        })
+        const avt= await User.findOne({ where:{id:id}})
         if(avt){
-            // xóa file avt cũ để cập nhật avt mới
             fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
-                if (err) {
-                    return res.status(400).send({
-                        status: false,
-                        message: err.message,
-                    });
-                };
+                if (err) return res.status(400).send({status: false, message: err.message});
             });
         }
         file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
         const path = `${dir}/${file.name}`;
-        //di chuyển file avt đến thư mục
         await file.mv(path, function (err) {
-            if (err){
-                return res.status(400).send({
-                    status: false,
-                    message: err.message,
-                });
-            }
+            if (err) return res.status(400).send({status: false, message: err.message});
         });
         req.body.avatar= file.name;
-        const user = await User.update(req.body, {
-            where: { id: id },
-          });
+        const user = await User.update(req.body, {where: { id: id }});
         if (user == 1) {
-            return res.status(200).send({
-                status: true,
-                message: 'update success',
-            });
+            return res.status(200).send({status: true, message: 'update success'});
         } else {
-            return res.status(400).send({
-                status: false,
-                message: 'update fail',
-            });
+            return res.status(400).send({status: false, message: 'update fail'});
         }
     } catch (error) {
-      res.status(400).send({
-        status: false,
-        message: error.message,
+      res.status(400).send({status: false, message: error.message,
       });
     }
   };
