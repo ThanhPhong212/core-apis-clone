@@ -1,7 +1,6 @@
-const { User, Role, Otp } = require('../models/index');
+const { User, Otp } = require('../models/index');
 const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs');
-const { convertUnderscore } = require('../plugins/index');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
@@ -104,7 +103,6 @@ exports.checkOtp = async (req, res) => {
         where: { phone: phone }
     });
     try {
-        console.log(user);
         user.isVerified = true;
         user.isActive = true;
         await user.save();
@@ -151,6 +149,7 @@ exports.createUser = async (req, res) => {
     }
 }
 
+// update user
 exports.updateProfile = async (req, res) => {
     try {
         const id= req.params.id;
@@ -161,6 +160,7 @@ exports.updateProfile = async (req, res) => {
             where:{id:id}
         })
         if(avt){
+            // xóa file avt cũ để cập nhật avt mới
             fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
                 if (err) {
                     return res.status(400).send({
@@ -172,6 +172,7 @@ exports.updateProfile = async (req, res) => {
         }
         file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
         const path = `${dir}/${file.name}`;
+        //di chuyển file avt đến thư mục
         await file.mv(path, function (err) {
             if (err){
                 return res.status(400).send({
@@ -227,7 +228,6 @@ exports.getUsers = async (req, res) => {
             order: [['created_at', 'ASC']],
         });
         const total_page = (user.count % limit) != 0 ? Math.floor(user.count / limit) + 1 : Math.floor(user.count / limit);
-        await convertUnderscore(user.rows);
         res.status(200).send({
             total_page: total_page,
             data: user.rows,
