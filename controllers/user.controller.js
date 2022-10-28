@@ -191,7 +191,7 @@ exports.updateProfile = async (req, res) => {
             });
         } else {
             return res.status(400).send({
-                status: true,
+                status: false,
                 message: 'update fail',
             });
         }
