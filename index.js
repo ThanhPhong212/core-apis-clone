@@ -17,7 +17,7 @@ if (process.env['NODE_ENV'] === 'production') {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload());
+app.use(fileUpload({createParentPath: true}));
 app.use(Routes);
 // app.use(cookieParser());
 

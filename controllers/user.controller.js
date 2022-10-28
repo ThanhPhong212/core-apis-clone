@@ -153,7 +153,6 @@ exports.createUser = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        
         const id= req.params.id;
         const file = req.files.avatar;
         const dir= `./tmp/avatarUser/${id}`;
@@ -161,14 +160,16 @@ exports.updateProfile = async (req, res) => {
         const avt= await User.findOne({
             where:{id:id}
         })
-        fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
-            if (err) {
-                return res.status(400).send({
-                    status: false,
-                    message: err.message,
-                });
-            };
-        });
+        if(avt){
+            fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
+                if (err) {
+                    return res.status(400).send({
+                        status: false,
+                        message: err.message,
+                    });
+                };
+            });
+        }
         file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
         const path = `${dir}/${file.name}`;
         await file.mv(path, function (err) {
@@ -184,9 +185,15 @@ exports.updateProfile = async (req, res) => {
             where: { id: id },
           });
         if (user == 1) {
-            return res.status(200).send("Update user success");
+            return res.status(200).send({
+                status: true,
+                message: 'update success',
+            });
         } else {
-            return res.status(400).send("Update user fail");
+            return res.status(400).send({
+                status: true,
+                message: 'update fail',
+            });
         }
     } catch (error) {
       res.status(400).send({
