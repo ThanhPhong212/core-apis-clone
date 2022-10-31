@@ -1,7 +1,6 @@
-const { User, Role, Otp } = require('../models/index');
+const { User, Otp } = require('../models/index');
 const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs');
-const { convertUnderscore } = require('../plugins/index');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
@@ -104,7 +103,6 @@ exports.checkOtp = async (req, res) => {
         where: { phone: phone }
     });
     try {
-        console.log(user);
         user.isVerified = true;
         user.isActive = true;
         await user.save();
@@ -151,50 +149,39 @@ exports.createUser = async (req, res) => {
     }
 }
 
+// update user
 exports.updateProfile = async (req, res) => {
     try {
-        
         const id= req.params.id;
-        const file = req.files.avatar;
-        const dir= `./tmp/avatarUser/${id}`;
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
-        const avt= await User.findOne({
-            where:{id:id}
-        })
-        fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
-            if (err) {
-                return res.status(400).send({
-                    status: false,
-                    message: err.message,
+        if(req.files){
+            const file = req.files.avatar;
+            const dir= `./tmp/avatarUser/${id}`;
+            const avt= await User.findOne({ where:{id:id}})
+            if(avt){
+                if(avt.avatar){
+                    if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
+                    fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
+                        if (err) return res.status(400).send({status: false, message: err.message});
+                    });
+                }
+                file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
+                const path = `${dir}/${file.name}`;
+                await file.mv(path, function (err) {
+                    if (err) return res.status(400).send({status: false, message: err.message});
                 });
-            };
-        });
-        file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
-        const path = `${dir}/${file.name}`;
-        await file.mv(path, function (err) {
-            if (err){
-                return res.status(400).send({
-                    status: false,
-                    message: err.message,
-                });
+                req.body.avatar= file.name;
             }
-        });
-        req.body.avatar= file.name;
-        const user = await User.update(req.body, {
-            where: { id: id },
-          });
+        }
+        const user = await User.update(req.body, {where: { id: id }});
         if (user == 1) {
-            return res.status(200).send("Update user success");
+            return res.status(200).send({status: true, message: 'Update success'});
         } else {
-            return res.status(400).send("Update user fail");
+            return res.status(400).send({status: false, message: 'Update fail'});
         }
     } catch (error) {
-      res.status(400).send({
-        status: false,
-        message: error.message,
-      });
+      res.status(400).send({status: false, message: error.message});
     }
-  };
+};
 
 // Get all -> 
 exports.getUsers = async (req, res) => {
@@ -220,7 +207,6 @@ exports.getUsers = async (req, res) => {
             order: [['created_at', 'ASC']],
         });
         const total_page = (user.count % limit) != 0 ? Math.floor(user.count / limit) + 1 : Math.floor(user.count / limit);
-        await convertUnderscore(user.rows);
         res.status(200).send({
             total_page: total_page,
             data: user.rows,
