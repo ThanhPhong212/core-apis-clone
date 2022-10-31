@@ -153,21 +153,23 @@ exports.createUser = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     try {
         const id= req.params.id;
-        const file = req.files.avatar;
         const dir= `./tmp/avatarUser/${id}`;
         if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
-        const avt= await User.findOne({ where:{id:id}})
-        if(avt){
-            fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
+        if(req.file != null){
+            const file = req.files.avatar;
+            const avt= await User.findOne({ where:{id:id}})
+            if(avt){
+                fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
+                    if (err) return res.status(400).send({status: false, message: err.message});
+                });
+            }
+            file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
+            const path = `${dir}/${file.name}`;
+            await file.mv(path, function (err) {
                 if (err) return res.status(400).send({status: false, message: err.message});
             });
+            req.body.avatar= file.name;
         }
-        file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
-        const path = `${dir}/${file.name}`;
-        await file.mv(path, function (err) {
-            if (err) return res.status(400).send({status: false, message: err.message});
-        });
-        req.body.avatar= file.name;
         const user = await User.update(req.body, {where: { id: id }});
         if (user == 1) {
             return res.status(200).send({status: true, message: 'update success'});
