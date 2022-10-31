@@ -158,7 +158,7 @@ exports.updateProfile = async (req, res) => {
             const dir= `./tmp/avatarUser/${id}`;
             if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
             const avt= await User.findOne({ where:{id:id}})
-            if(avt.avatar){
+            if(avt && avt.avatar){
                 fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
                     if (err) return res.status(400).send({status: false, message: err.message});
                 });
