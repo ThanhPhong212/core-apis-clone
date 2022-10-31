@@ -152,8 +152,6 @@ exports.createUser = async (req, res) => {
 // update user
 exports.updateProfile = async (req, res) => {
     try {
-        // console.log(req.files);
-
         const id= req.params.id;
         const dir= `./tmp/avatarUser/${id}`;
         if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
