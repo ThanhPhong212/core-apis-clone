@@ -153,12 +153,12 @@ exports.createUser = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     try {
         const id= req.params.id;
-        const dir= `./tmp/avatarUser/${id}`;
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
         if(req.files){
             const file = req.files.avatar;
+            const dir= `./tmp/avatarUser/${id}`;
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
             const avt= await User.findOne({ where:{id:id}})
-            if(avt){
+            if(avt.avatar){
                 fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
                     if (err) return res.status(400).send({status: false, message: err.message});
                 });
@@ -172,15 +172,14 @@ exports.updateProfile = async (req, res) => {
         }
         const user = await User.update(req.body, {where: { id: id }});
         if (user == 1) {
-            return res.status(200).send({status: true, message: 'update success'});
+            return res.status(200).send({status: true, message: 'Update success'});
         } else {
-            return res.status(400).send({status: false, message: 'update fail'});
+            return res.status(400).send({status: false, message: 'Update fail'});
         }
     } catch (error) {
-      res.status(400).send({status: false, message: error.message,
-      });
+      res.status(400).send({status: false, message: error.message});
     }
-  };
+};
 
 // Get all -> 
 exports.getUsers = async (req, res) => {
