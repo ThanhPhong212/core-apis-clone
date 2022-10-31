@@ -156,19 +156,21 @@ exports.updateProfile = async (req, res) => {
         if(req.files){
             const file = req.files.avatar;
             const dir= `./tmp/avatarUser/${id}`;
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
             const avt= await User.findOne({ where:{id:id}})
-            if(avt && avt.avatar){
-                fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
+            if(avt){
+                if(avt.avatar){
+                    if (!fs.existsSync(dir)) fs.mkdirSync(dir,{ recursive: true });
+                    fs.unlink(`${dir}/${avt.avatar}`,  function (err, data) {
+                        if (err) return res.status(400).send({status: false, message: err.message});
+                    });
+                }
+                file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
+                const path = `${dir}/${file.name}`;
+                await file.mv(path, function (err) {
                     if (err) return res.status(400).send({status: false, message: err.message});
                 });
+                req.body.avatar= file.name;
             }
-            file.name = file.md5 + '-' + id + '.' + file.name.split('.').pop();
-            const path = `${dir}/${file.name}`;
-            await file.mv(path, function (err) {
-                if (err) return res.status(400).send({status: false, message: err.message});
-            });
-            req.body.avatar= file.name;
         }
         const user = await User.update(req.body, {where: { id: id }});
         if (user == 1) {
