@@ -5,8 +5,8 @@ exports.getConversation = async (req, res) => {
     const { id_user1, id_user2 } = req.query;
     const messenger = await Message.findOne({
         where: {
-            user_id1: id_user1,
-            user_id2: id_user2
+            userId1: id_user1,
+            userId2: id_user2
         }
     });
     if (!messenger) {
@@ -31,11 +31,11 @@ exports.send = async (req, res) => {
         name: name,
         category: category,
     }
-    const messenger = await Message.findOne({ where: { user_id1: id_user1, user_id2: id_user2 } });
+    const messenger = await Message.findOne({ where: { userId1: id_user1, userId2: id_user2 } });
     if (!messenger) {
         await Message.create({
-            user_id1: id_user1,
-            user_id2: id_user2,
+            userId1: id_user1,
+            userId2: id_user2,
             content: [data]
         });
         return res.status(200).send({
@@ -47,7 +47,7 @@ exports.send = async (req, res) => {
     await Message.update({
         content: messenger.content
     }, {
-        where: { user_id1: id_user1, user_id2: id_user2 }
+        where: { userId1: id_user1, userId2: id_user2 }
     })
     res.status(200).send({
         status: true,

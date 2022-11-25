@@ -19,16 +19,16 @@ function authorize(roles = []) {
         if (!user) {
           return next('User not found');
         }
-        Role.findByPk(user.dataValues.role_id).then((role) => {
+        Role.findByPk(user.dataValues.roleId).then((role) => {
           if (!role) {
             return next('Role not found');
           }
           if (roles.length && !roles.includes(role.dataValues.value)) {
             return next(`Unauthorized`);
           }
+          next();
         });
       });
-      next();
     },
   ];
 }

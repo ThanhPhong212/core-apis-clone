@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    user_id1: {
+    userId1: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    user_id2: {
+    userId2: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -42,8 +42,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Message',
     tableName: 'messages',
-    underscored: true,
-    underscoredAll: true,
     timestamps: false,
   });
   return Message;

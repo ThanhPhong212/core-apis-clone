@@ -1,16 +1,17 @@
 const { Router } = require('express');
+const fs = require('fs');
+const path = require('path');
 const router = Router();
 
-const userRouter = require('./user.router');
-const roleRouter = require('./role.router');
-const uploadRouter = require('./upload.router');
-const Message = require('./message.router');
-
-router.use('/api', Message)
-router.use('/api', userRouter)
-router.use('/api', roleRouter)
-router.use('/api', uploadRouter)
-
+fs.readdirSync(__dirname)
+    .filter(file => {
+        return ((file.indexOf('.') !== 0) && (file !== path.basename(__filename)) && (file.slice(-3) === '.js'));
+    })
+    .forEach(file => {
+        var name = file.replace(file.slice(-10), '');
+        name = require(path.join(__dirname, file));
+        router.use('/api', name)    
+    });
 
 // export router
 module.exports = router;

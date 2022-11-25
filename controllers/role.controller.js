@@ -1,13 +1,14 @@
-const { Role, User } = require("../models/index");
-const Sequelize = require("sequelize");
+const { Role, User, InvestFund } = require('../models/index');
+const Sequelize = require('sequelize');
+const { Op } = require('sequelize');
 
 //  create role
 exports.createRole = async (req, res) => {
   try {
-    const role = await Role.create(req.body)
+    const role = await Role.create(req.body);
     res.status(200).send({
       status: true,
-      message: "",
+      message: '',
       data: role,
     });
   } catch (error) {
@@ -17,21 +18,19 @@ exports.createRole = async (req, res) => {
     });
   }
 };
-
-// get all role
 exports.getRoles = async (req, res) => {
   try {
     const role = await Role.findAll();
     if (!role) {
       res.status(404).send({
         status: false,
-        message: "",
+        message: 'not found',
         data: role,
       });
     }
     res.status(200).send({
       status: true,
-      message: "",
+      message: '',
       data: role,
     });
   } catch (error) {
@@ -49,12 +48,12 @@ exports.getRoleId = async (req, res) => {
     if (!roleId) {
       return res.status(404).send({
         status: false,
-        message: "",
+        message: '',
       });
     }
     res.status(200).send({
       status: true,
-      message: "",
+      message: '',
       data: roleId,
     });
   } catch (error) {
@@ -65,42 +64,31 @@ exports.getRoleId = async (req, res) => {
   }
 };
 
-//get users by role id
-
-exports.getUserRoleId = async (req, res) => {
+// get user by value of role
+exports.getUserRole = async (req, res) => {
   try {
+
     const users = await Role.findAll({
       raw: true,
       where: {
-        id: req.params.id,
+        value: req.params.value,
       },
       attributes: [
-        "id",
         "value",
-        "text",
         "active",
-        [Sequelize.col("User.id"), "user_id"],
-        [Sequelize.col("User.user_name"), "user_name"],
-        [Sequelize.col("User.first_name"), "first_name"],
-        [Sequelize.col("User.last_name"), "last_name"],
-        [Sequelize.col("User.created_at"), "created_at"],
+        [Sequelize.col("Users.id"), "userId"],
+        [Sequelize.col("Users.fullName"), "fullName"],
       ],
       include: [
         {
           model: User,
+          where: { isDeleted: false },
           attributes: [],
-        },
+        }
       ],
     });
-    if (!users) {
-      return res.status(404).send({
-        status: false,
-        message: "",
-        data: [],
-      });
-    }
     res.status(200).send({
-      status: true,   
+      status: true,
       message: "",
       data: users,
     });

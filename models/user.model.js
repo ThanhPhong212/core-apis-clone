@@ -1,7 +1,7 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+const { convertDate } = require("../plugins/index");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -11,83 +11,100 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.Role.hasOne(this, {
-        foreignKey: { name: 'role_id', allowNull: false },
+      models.Role.hasMany(this, {
+        foreignKey: { name: 'roleId', allowNull: false },
         onDelete: 'NO ACTION',
-        // onUpdate: 'RESTRICT'
       });
     }
   }
-  User.init({
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
-    },
-    phone: {
-      type: DataTypes.STRING,
-      unique:{
-        msg:"Phone must be unique"
-      }
-    },
-    password: {
-      type: DataTypes.STRING
-    },
-    firstName: {
-      type: DataTypes.STRING
-    },
-    lastName: {
-      type: DataTypes.STRING
-    },
-    fullName: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return `${this.firstName} ${this.lastName}`;
+  User.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
-      set(value) {
-        throw new Error('Do not try to set the `fullName` value!');
-      }
+      avatar: {
+        type: DataTypes.STRING,
+        set(value) {
+          this.setDataValue('avatar', `user/${this.code}/avatar/${value}`);
+        },
+        get() {
+          const url = `${process.env.URL_AVT}:${process.env.PORT}`;
+          const avatar = this.getDataValue('avatar');
+          if (!avatar) {
+            return `${url}/user/avatar-default.png`;
+          }
+          return `${url}/${avatar}`;
+        },
+      },
+      email: {
+        type: DataTypes.STRING,
+        set(value) {
+          this.setDataValue('userName', `${value}`);
+          this.setDataValue('email', `${value}`);
+        },
+      },
+      password: {
+        type: DataTypes.STRING,
+      },
+      fullName: {
+        type: DataTypes.STRING,
+      },
+      gender: {
+        type: DataTypes.STRING,
+        defaultValue: '2',
+      },
+      birthday: {
+        type: DataTypes.DATEONLY,
+      },
+      birthdayFormat: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          const date = this.getDataValue('birthday');
+          if (date) {
+            const date2 = date.split('-');
+            return `${date2[2]}-${date2[1]}-${date2[0]}`;
+          }
+        },
+      },
+      phone: {
+        type: DataTypes.STRING,
+        unique: {
+          msg: 'phone must be unique',
+        },
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
+      isDeleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      isVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: new Date(),
+        get() {
+          const date = this.getDataValue('createdAt');
+          return convertDate(date);
+        },
+      },
     },
-    birthDate:{
-      type: DataTypes.STRING
-    },
-
-    avatar: {
-      type: DataTypes.TEXT
-    },
-
-    nationality:{
-      type: DataTypes.STRING
-    },
-
-    gender:{
-      type: DataTypes.STRING
-    },
-
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-
-    isVerified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: new Date()
-    },
-  }, {
-    sequelize,
-    modelName: 'User',
-    tableName: 'users',
-    underscored: true,
-    underscoredAll: true,
-    timestamps: true,
-    createdAt: false,
-    indexes: [
-      { fields: ['phone'], name: 'key_unique', unique: true }
-    ]
-  });
+    {
+      sequelize,
+      modelName: 'User',
+      tableName: 'users',
+      timestamps: true,
+      createdAt: false,
+      // indexes: [
+      //   { fields: ['userName','email'], name: 'key_unique', unique: true }
+      // ]
+    }
+  );
   return User;
 };
