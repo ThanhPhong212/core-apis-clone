@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       models.Role.hasOne(this, {
         foreignKey: { name: 'role_id', allowNull: false },
         onDelete: 'NO ACTION',
-        // onUpdate: 'RESTRICT'
       });
     }
   }
@@ -24,43 +23,54 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
+
     phone: {
       type: DataTypes.STRING,
-      unique:{
-        msg:"Phone must be unique"
+      unique: {
+        msg: "Phone must be unique"
       }
     },
+
     password: {
       type: DataTypes.STRING
     },
-    firstName: {
-      type: DataTypes.STRING
-    },
-    lastName: {
-      type: DataTypes.STRING
-    },
+
     fullName: {
+      type: DataTypes.STRING,
+    },
+
+    birthDate: {
+      type: DataTypes.DATE
+    },
+
+    birthdayFormat: {
       type: DataTypes.VIRTUAL,
       get() {
-        return `${this.firstName} ${this.lastName}`;
+        const date = this.getDataValue('birthDate');
+        return convertDate(date);
       },
-      set(value) {
-        throw new Error('Do not try to set the `fullName` value!');
-      }
-    },
-    birthDate:{
-      type: DataTypes.STRING
     },
 
     avatar: {
-      type: DataTypes.TEXT
+      type: DataTypes.STRING,
+      set(value) {
+        this.setDataValue('avatar', `user/${this.id}/avatar/${value}`);
+      },
+      get() {
+        const url = `${process.env.URL_AVT}:${process.env.PORT}`;
+        const avatar = this.getDataValue('avatar');
+        if (!avatar) {
+          return `${url}/user/avatar-default.png`;
+        }
+        return `${url}/${avatar}`;
+      },
     },
 
-    nationality:{
+    nationality: {
       type: DataTypes.STRING
     },
 
-    gender:{
+    gender: {
       type: DataTypes.STRING
     },
 
@@ -73,16 +83,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    created_at: {
+
+    createdAt: {
       type: DataTypes.DATE,
-      defaultValue: new Date()
+      defaultValue: new Date(),
+      get() {
+        const date = this.getDataValue('createdAt');
+        return convertDate(date);
+      },
     },
   }, {
     sequelize,
     modelName: 'User',
     tableName: 'users',
-    underscored: true,
-    underscoredAll: true,
     timestamps: true,
     createdAt: false,
     indexes: [

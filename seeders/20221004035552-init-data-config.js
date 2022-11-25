@@ -19,10 +19,6 @@ module.exports = {
       { id: 3, value: 'INVESTMENT_STAFF', active: true }
     ],{})
 
-    await queryInterface.bulkInsert('users', [
-      { user_name: 'admin', password: 'Admin@123', first_name: 'firstName', last_name: 'lastName', updated_at: new Date(), role_id: 1 },
-    ],{})
-
   },
 
   async down (queryInterface, Sequelize) {
@@ -33,7 +29,6 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
 
-    await queryInterface.bulkDelete('users', null, {});
     await queryInterface.bulkDelete('roles', null, {});
   }
 };

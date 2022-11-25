@@ -33,8 +33,6 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Otp',
         tableName: 'otps',
-        underscored: true,
-        underscoredAll: true,
         timestamps: false,
         indexes: [
             { fields: ['phone'], name: 'phone_otp_unique', unique: true }

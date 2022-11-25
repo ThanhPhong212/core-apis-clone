@@ -1,5 +1,5 @@
 {
-  "name": "hmb-api",
+  "name": "namlong-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -23,6 +23,7 @@
     "body-parser": "^1.20.1",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "express-fileupload": "^1.4.0",
@@ -31,6 +32,11 @@
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.23.2",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1",
     "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.5.2"
   }
 }

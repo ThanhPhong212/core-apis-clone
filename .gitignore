@@ -2,4 +2,5 @@
 .env
 .vscode
 /logs
-/tmp/**
+/tmp
+/uploads/user/*/*
